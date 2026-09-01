@@ -1,0 +1,815 @@
+# Build Brief: SaaS Pharmacy POS & Business Operating System
+
+Build a production-quality **multi-tenant SaaS Pharmacy POS** designed initially for small and medium-sized retail pharmacies/chemists in Kenya.
+
+The immediate customer problem is simple:
+
+> **A pharmacy needs to sell products quickly and collect M-Pesa payments directly from the POS through STK Push, while automatically keeping inventory, sales, and business records accurate.**
+
+This is NOT just a generic POS. It should be designed as the foundation for a future **AI-powered pharmacy/business operating system**.
+
+---
+
+## 1. Product Vision
+
+Build:
+
+**A modern cloud pharmacy POS that handles sales, M-Pesa payments, inventory, purchasing, expiry management, staff operations, and business intelligence from one system.**
+
+The long-term direction is:
+
+```text
+POS
+ ↓
+Transactions
+ ↓
+Inventory + Customers + Suppliers
+ ↓
+Financial Intelligence
+ ↓
+AI Business Assistant
+ ↓
+Automation
+```
+
+The pharmacy owner should eventually be able to ask:
+
+> "How is my business doing?"
+
+> "What should I reorder?"
+
+> "What products are expiring?"
+
+> "Which products make me the most profit?"
+
+> "Why did sales fall this week?"
+
+> "How much did I make today?"
+
+> "Send an STK Push to this customer."
+
+> "Show me all stock expiring within 60 days."
+
+The system should progressively evolve toward answering and executing these requests.
+
+---
+
+# 2. Primary MVP Problem
+
+The first customer has specifically identified this problem:
+
+**M-Pesa STK Push from the POS.**
+
+The primary workflow must therefore be extremely good:
+
+```text
+Create Sale
+    ↓
+Select M-Pesa
+    ↓
+Enter customer phone number
+    ↓
+Click "Send STK Push"
+    ↓
+Customer receives M-Pesa prompt
+    ↓
+Customer enters PIN
+    ↓
+Safaricom callback received
+    ↓
+Payment automatically confirmed
+    ↓
+Sale marked PAID
+    ↓
+Inventory deducted
+    ↓
+Receipt generated
+```
+
+Never require the cashier to manually verify whether the customer paid if the Daraja callback can confirm it.
+
+Handle:
+
+* successful payment
+* cancelled payment
+* failed payment
+* timeout
+* duplicate callback
+* network interruption
+* already-paid transaction
+* incorrect phone number
+* transaction reconciliation
+
+Use proper idempotency and transaction states.
+
+---
+
+# 3. SaaS Architecture
+
+This must be a **multi-tenant SaaS application**.
+
+A pharmacy/business is a tenant.
+
+Example:
+
+```text
+QuanteQ
+│
+├── Tenant: ABC Chemist
+│   ├── Branch 1
+│   ├── Users
+│   ├── Products
+│   ├── Inventory
+│   ├── Suppliers
+│   └── Transactions
+│
+├── Tenant: XYZ Pharmacy
+│   ├── Branch 1
+│   └── Branch 2
+│
+└── Tenant: Another Pharmacy
+```
+
+No tenant must ever be able to access another tenant's data.
+
+Design the database around tenant isolation from the beginning.
+
+Support future:
+
+* multiple branches
+* multiple users
+* multiple cashiers
+* role-based permissions
+* subscription plans
+* usage limits
+* tenant-level settings
+* audit logs
+
+---
+
+# 4. User Roles
+
+Implement RBAC.
+
+### Owner/Admin
+
+Can:
+
+* view dashboard
+* manage products
+* manage inventory
+* manage suppliers
+* manage purchases
+* manage users
+* view reports
+* view financial information
+* configure M-Pesa
+* manage branches
+* view audit logs
+
+### Pharmacist/Manager
+
+Can:
+
+* process sales
+* manage inventory
+* view products
+* receive stock
+* view reports
+
+### Cashier
+
+Can:
+
+* create sales
+* process payments
+* send STK Push
+* print receipts
+* view permitted transaction history
+
+Cashiers should NOT be able to arbitrarily modify prices, delete transactions, or manipulate inventory.
+
+---
+
+# 5. POS Interface
+
+The POS should be extremely fast.
+
+The cashier should be able to:
+
+* search product
+* scan barcode
+* select quantity
+* see price
+* apply permitted discount
+* select payment method
+* complete transaction
+
+Payment methods:
+
+* M-Pesa
+* Cash
+* Card
+* Other configurable methods
+
+The interface should feel closer to a modern retail POS than an old accounting application.
+
+Prioritize:
+
+**speed + clarity + reliability.**
+
+---
+
+# 6. Product Management
+
+Each product should support:
+
+* product name
+* generic name
+* category
+* SKU
+* barcode
+* selling price
+* buying price
+* tax/VAT configuration
+* unit
+* supplier
+* minimum stock level
+* current stock
+* active/inactive status
+
+Pharmacy-specific information:
+
+* batch number
+* expiry date
+* quantity per batch
+* purchase price per batch
+
+Do not treat inventory as a single number.
+
+Inventory should be batch-aware.
+
+Example:
+
+```text
+Paracetamol 500mg
+
+Batch A
+Quantity: 120
+Expiry: 2026-11-30
+
+Batch B
+Quantity: 250
+Expiry: 2027-06-30
+```
+
+---
+
+# 7. Expiry Management
+
+Implement expiry intelligence.
+
+Dashboard:
+
+```text
+EXPIRING SOON
+
+Product              Qty      Expiry
+------------------------------------------------
+Drug A               30       14 days
+Drug B               12       31 days
+Drug C               45       60 days
+```
+
+Support configurable expiry thresholds:
+
+* 30 days
+* 60 days
+* 90 days
+
+Use **FEFO — First Expiry, First Out** where appropriate.
+
+---
+
+# 8. Inventory
+
+Track:
+
+* stock received
+* stock sold
+* stock adjusted
+* damaged stock
+* expired stock
+* returned stock
+* transfers
+* current stock
+* stock valuation
+
+Every inventory change must have an audit trail.
+
+Example:
+
+```text
+Inventory Movement
+
+Product: Amoxicillin
+Action: Sale
+Quantity: -2
+User: Cashier 01
+Transaction: INV-000142
+Timestamp: ...
+```
+
+---
+
+# 9. Purchasing
+
+Support:
+
+* suppliers
+* purchase orders
+* receiving stock
+* supplier invoices
+* purchase price
+* batch number
+* expiry date
+* quantities
+* supplier balances
+
+The owner should eventually be able to see:
+
+> "Supplier A is currently 8% cheaper than Supplier B for your top 20 products."
+
+Design the data model so this can be added later.
+
+---
+
+# 10. Dashboard
+
+The dashboard should immediately answer:
+
+### Today
+
+* Sales
+* Number of transactions
+* M-Pesa sales
+* Cash sales
+* Gross profit
+* Items sold
+
+### Inventory
+
+* Low-stock products
+* Expiring products
+* Inventory value
+* Fast-moving products
+* Slow-moving products
+
+### Business
+
+* Revenue trend
+* Gross margin
+* Top products
+* Top categories
+* Payment breakdown
+
+Do not overload the dashboard with meaningless charts.
+
+Every metric should answer a business question.
+
+---
+
+# 11. AI-Ready Architecture
+
+Do NOT build a fake chatbot that simply sends database dumps to an LLM.
+
+Create structured business services that expose reliable data.
+
+For example:
+
+```text
+get_daily_sales()
+get_inventory_status()
+get_expiring_stock()
+get_low_stock()
+get_top_products()
+get_profit()
+get_supplier_prices()
+get_customer_purchase_history()
+get_payment_status()
+```
+
+Later these become tools available to an AI agent.
+
+Example:
+
+```text
+Owner:
+"How much did we make today?"
+
+AI
+ ↓
+get_daily_sales()
+ ↓
+get_profit()
+ ↓
+Answer
+```
+
+Eventually:
+
+```text
+Owner:
+"Reorder everything that's running low."
+
+AI
+ ↓
+get_low_stock()
+ ↓
+create_purchase_order()
+ ↓
+request_confirmation()
+ ↓
+execute
+```
+
+The architecture must make this possible.
+
+---
+
+# 12. M-Pesa Integration
+
+Build the M-Pesa integration behind a clean service abstraction.
+
+Example:
+
+```text
+PaymentService
+    |
+    └── MpesaService
+          ├── initiate_stk_push()
+          ├── process_callback()
+          ├── query_transaction()
+          └── reconcile_transaction()
+```
+
+Never put M-Pesa business logic directly inside frontend components.
+
+Use asynchronous callback/webhook handling.
+
+Maintain payment states such as:
+
+```text
+PENDING
+SUCCESS
+FAILED
+CANCELLED
+TIMEOUT
+REVERSED
+```
+
+Every payment should have a unique internal reference.
+
+---
+
+# 13. Offline Resilience
+
+A pharmacy cannot stop selling because the internet temporarily disappears.
+
+Design the POS so that the frontend can gracefully handle connectivity problems.
+
+At minimum:
+
+* cache product data
+* preserve an active cart
+* prevent accidental duplicate sales
+* clearly indicate connectivity status
+* synchronize safe operations when connectivity returns
+
+For M-Pesa specifically, clearly communicate that STK Push requires connectivity.
+
+---
+
+# 14. Receipts
+
+Generate professional receipts containing:
+
+* pharmacy name
+* address/contact
+* transaction number
+* date/time
+* cashier
+* products
+* quantity
+* unit price
+* subtotal
+* tax if applicable
+* total
+* payment method
+* M-Pesa transaction reference where available
+
+Support printing and digital receipt delivery as future extensions.
+
+---
+
+# 15. Auditability
+
+Every sensitive action should be auditable.
+
+Track:
+
+* user
+* action
+* entity
+* previous value
+* new value
+* timestamp
+* branch
+* tenant
+
+Examples:
+
+```text
+Price changed
+Stock adjusted
+Sale voided
+Discount applied
+User created
+Product deleted/deactivated
+Purchase received
+Payment status changed
+```
+
+Never silently mutate financial records.
+
+Prefer immutable financial transactions and reversal/void mechanisms.
+
+---
+
+# 16. Security
+
+Treat this as a real SaaS product.
+
+Implement:
+
+* authentication
+* secure password handling
+* RBAC
+* tenant isolation
+* API authorization
+* rate limiting where appropriate
+* input validation
+* secure secrets management
+* webhook verification
+* audit logs
+* database backups
+* HTTPS
+* secure production configuration
+
+Never expose M-Pesa credentials to the frontend.
+
+Never hardcode credentials.
+
+---
+
+# 17. Design Direction
+
+The UI should feel:
+
+**modern, professional, fast, calm, trustworthy.**
+
+Not:
+
+* cluttered
+* enterprise-bloated
+* old-school ERP
+* overly colorful
+* dashboard-for-the-sake-of-dashboard
+
+Think:
+
+**Stripe + modern POS + pharmacy operations.**
+
+Primary navigation:
+
+```text
+Dashboard
+POS
+Products
+Inventory
+Purchasing
+Suppliers
+Sales
+Customers
+Reports
+AI Assistant
+Settings
+```
+
+The POS screen should be the fastest screen in the application.
+
+---
+
+# 18. SaaS Layer
+
+Create the foundation for:
+
+### Subscription
+
+```text
+FREE
+STARTER
+PRO
+BUSINESS
+```
+
+Potential future limits:
+
+* number of branches
+* number of users
+* transactions/month
+* AI queries
+* reports
+* integrations
+
+Do not overbuild billing initially, but structure the application so subscriptions can be added cleanly.
+
+---
+
+# 19. Initial Onboarding
+
+A new pharmacy should be able to:
+
+```text
+Create account
+      ↓
+Create pharmacy
+      ↓
+Configure branch
+      ↓
+Configure M-Pesa
+      ↓
+Import products
+      ↓
+Set opening inventory
+      ↓
+Create staff
+      ↓
+Start selling
+```
+
+Support CSV product import.
+
+Do not force the owner to manually enter 2,000 products one by one.
+
+---
+
+# 20. Technology
+
+Prefer a stack that is fast to develop and maintain.
+
+Recommended:
+
+### Frontend
+
+Next.js + TypeScript
+
+### Backend
+
+FastAPI + Python
+
+### Database
+
+PostgreSQL
+
+### Background jobs
+
+Celery/Redis or an equivalent robust queue
+
+### Deployment
+
+Docker
+
+Cloud deployment should be straightforward.
+
+Structure the codebase cleanly:
+
+```text
+/apps
+  /web
+
+/services
+  /api
+
+/modules
+  /auth
+  /tenants
+  /pos
+  /inventory
+  /products
+  /purchases
+  /suppliers
+  /payments
+  /mpesa
+  /reports
+  /ai
+
+/infrastructure
+  docker
+  deployment
+```
+
+Adapt the structure if the chosen architecture has a better equivalent.
+
+---
+
+# 21. MVP Scope
+
+Do NOT attempt to build everything above before the first customer uses it.
+
+The first production milestone is:
+
+### MUST WORK
+
+1. Tenant creation
+2. Login
+3. Pharmacy setup
+4. Product management
+5. Inventory
+6. POS
+7. Barcode/product search
+8. Sales
+9. M-Pesa STK Push
+10. M-Pesa callback
+11. Payment confirmation
+12. Receipt
+13. Basic dashboard
+14. Basic user roles
+15. Basic audit log
+
+Then:
+
+### PHASE 2
+
+* purchasing
+* suppliers
+* batch tracking
+* expiry management
+* FEFO
+* advanced reports
+* customer management
+
+Then:
+
+### PHASE 3
+
+* AI business assistant
+* intelligent reorder recommendations
+* supplier price intelligence
+* anomaly detection
+* automated reporting
+* business forecasting
+* automated workflows
+
+---
+
+# 22. Most Important Product Principle
+
+Do not build features because they are listed in this document.
+
+Build around the customer's actual workflow.
+
+The first real pharmacy is the design partner.
+
+Instrument the product and observe:
+
+* where the cashier gets stuck
+* what the owner asks
+* what reports they need
+* what they currently do manually
+* what information they cannot easily obtain
+* what they repeatedly complain about
+
+The product should evolve from real operational data.
+
+---
+
+# 23. Definition of Success
+
+The first customer should be able to say:
+
+> "I can run my chemist from this."
+
+A cashier should be able to process a sale in seconds.
+
+An M-Pesa customer should receive an STK prompt without the cashier leaving the POS.
+
+The owner should be able to open the dashboard and understand the business immediately.
+
+And eventually the owner should be able to ask:
+
+> **"What's happening in my business?"**
+
+and receive a useful, data-backed answer.
+
+Build the foundation for that company—not merely another POS.
