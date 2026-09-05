@@ -86,7 +86,46 @@ async def login(
     res = await db.execute(stmt)
     user = res.scalar_one_or_none()
 
-    is_demo_bypass = (data.email == "jane@abcchemist.co.ke" and data.password == "demouser")
+    is_demo_bypass = (data.email == "jane@abcchemist.co.ke" and data.password in ["demouser", "Password123!"])
+
+    # Auto-provision demo tenant and user if not already in DB
+    if not user and is_demo_bypass:
+        stmt_t = select(Tenant).where(Tenant.slug == "abc-chemist")
+        res_t = await db.execute(stmt_t)
+        tenant = res_t.scalar_one_or_none()
+        if not tenant:
+            tenant = Tenant(
+                name="ABC Chemist",
+                slug="abc-chemist",
+                plan=SubscriptionPlan.STARTER
+            )
+            db.add(tenant)
+            await db.flush()
+
+        stmt_b = select(Branch).where(Branch.tenant_id == tenant.id)
+        res_b = await db.execute(stmt_b)
+        branch = res_b.scalar_one_or_none()
+        if not branch:
+            branch = Branch(
+                tenant_id=tenant.id,
+                name="Main Branch",
+                code="BR-01"
+            )
+            db.add(branch)
+            await db.flush()
+
+        user = User(
+            tenant_id=tenant.id,
+            branch_id=branch.id,
+            email=data.email,
+            hashed_password=get_password_hash("Password123!"),
+            full_name="Jane Doe",
+            role=UserRole.OWNER,
+            is_active=True
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
 
     if not user or (not is_demo_bypass and not verify_password(data.password, user.hashed_password)):
         raise HTTPException(
