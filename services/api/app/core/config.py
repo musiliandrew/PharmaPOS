@@ -51,6 +51,12 @@ class Settings(BaseSettings):
     MPESA_SHORTCODE: str = "174379"
     MPESA_CALLBACK_URL: Optional[str] = None
 
+    # Pay Hero Settings (Multi-Tenant M-Pesa STK Gateway)
+    PAYHERO_API_USERNAME: Optional[str] = None
+    PAYHERO_API_PASSWORD: Optional[str] = None
+    PAYHERO_API_URL: str = "https://payhero.co.ke/api/v2"
+    PUBLIC_BACKEND_URL: str = "https://pharma-backend-51917830461.us-central1.run.app"
+
     # Google Cloud Storage Settings
     GCS_BUCKET_NAME: str = "pharma-storage"
     GCS_PROJECT_ID: Optional[str] = None

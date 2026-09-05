@@ -58,3 +58,29 @@ class SalesSummary(BaseModel):
     cash_volume: Decimal
     card_volume: Decimal
     gross_profit: Decimal
+
+
+class STKPushRequest(BaseModel):
+    phone_number: str
+    items: List[CartItem]
+    discount: Decimal = Field(default=Decimal("0.00"), ge=0)
+    customer_name: Optional[str] = None
+
+
+class STKPushResponse(BaseModel):
+    sale_id: UUID
+    receipt_number: str
+    total_amount: Decimal
+    phone_number: str
+    status: str
+    message: str
+    simulated: bool = False
+
+
+class SaleStatusResponse(BaseModel):
+    sale_id: UUID
+    receipt_number: str
+    payment_status: SalePaymentStatus
+    is_paid: bool
+    total_amount: Decimal
+    mpesa_receipt: Optional[str] = None

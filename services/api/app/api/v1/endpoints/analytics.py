@@ -129,6 +129,7 @@ async def get_payment_settings(
     return PaymentSettingsResponse(
         paybill=decrypt_value(branch.payment_paybill),
         till=decrypt_value(branch.payment_till),
+        payhero_channel_id=decrypt_value(branch.payment_payhero_channel_id),
         bank_name=branch.payment_bank_name,
         bank_acct=decrypt_value(branch.payment_bank_acct),
         preferred_method=branch.payment_preferred_method or "PAYBILL"
@@ -153,6 +154,7 @@ async def update_payment_settings(
         
     branch.payment_paybill = encrypt_value(payload.paybill) if payload.paybill else None
     branch.payment_till = encrypt_value(payload.till) if payload.till else None
+    branch.payment_payhero_channel_id = encrypt_value(payload.payhero_channel_id) if payload.payhero_channel_id else None
     branch.payment_bank_name = payload.bank_name
     branch.payment_bank_acct = encrypt_value(payload.bank_acct) if payload.bank_acct else None
     branch.payment_preferred_method = payload.preferred_method or "PAYBILL"

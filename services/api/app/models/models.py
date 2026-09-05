@@ -58,6 +58,11 @@ class Tenant(Base):
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
+    # Default Payment Configurations
+    payment_payhero_channel_id = Column(String(255), nullable=True)
+    payment_till = Column(String(255), nullable=True)
+    payment_paybill = Column(String(255), nullable=True)
+
     # Relationships
     branches = relationship("Branch", back_populates="tenant", cascade="all, delete-orphan")
     users = relationship("User", back_populates="tenant", cascade="all, delete-orphan")
@@ -111,6 +116,7 @@ class Branch(Base):
     # Payment Configurations (Encrypted at rest)
     payment_paybill = Column(String(255), nullable=True)
     payment_till = Column(String(255), nullable=True)
+    payment_payhero_channel_id = Column(String(255), nullable=True)
     payment_bank_name = Column(String(255), nullable=True)
     payment_bank_acct = Column(String(255), nullable=True)
     payment_preferred_method = Column(String(50), default="PAYBILL")
@@ -245,6 +251,8 @@ class MpesaTransaction(Base):
     sale_id = Column(UUID(as_uuid=True), ForeignKey("sales.id", ondelete="CASCADE"), nullable=False, index=True)
     merchant_request_id = Column(String(100), nullable=True, index=True)
     checkout_request_id = Column(String(100), unique=True, nullable=False, index=True)
+    provider = Column(String(50), default="PAYHERO", nullable=False)
+    channel_id = Column(String(100), nullable=True, index=True)
     phone_number = Column(String(20), nullable=False)
     amount = Column(Numeric(12, 2), nullable=False)
     mpesa_receipt_number = Column(String(100), nullable=True, index=True)

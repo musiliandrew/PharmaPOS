@@ -84,10 +84,12 @@ export default function DashboardPage() {
   // Payment settings states
   const [paybill, setPaybill] = useState('')
   const [till, setTill] = useState('')
+  const [payheroChannelId, setPayheroChannelId] = useState('')
   const [bankName, setBankName] = useState('')
   const [bankAcct, setBankAcct] = useState('')
   const [preferredMethod, setPreferredMethod] = useState<'PAYBILL' | 'TILL' | 'BANK'>('PAYBILL')
   const [settingsSaving, setSettingsSaving] = useState(false)
+  const [pendingSaleId, setPendingSaleId] = useState<string | null>(null)
 
   // Header dropdown states
   const [headerNotifOpen, setHeaderNotifOpen] = useState(false)
@@ -112,7 +114,7 @@ export default function DashboardPage() {
         api.get('/suppliers'),
         api.get('/customers'),
         api.get('/sales/history?limit=50'),
-        api.get('/analytics/settings/payments').catch(() => ({ data: { paybill: '', till: '', bank_name: '', bank_acct: '', preferred_method: 'PAYBILL' } }))
+        api.get('/analytics/settings/payments').catch(() => ({ data: { paybill: '', till: '', payhero_channel_id: '', bank_name: '', bank_acct: '', preferred_method: 'PAYBILL' } }))
       ])
       setDashData(dash.data)
       setExpiryItems(expiry.data)
@@ -123,6 +125,7 @@ export default function DashboardPage() {
       if (paySettings && paySettings.data) {
         setPaybill(paySettings.data.paybill || '')
         setTill(paySettings.data.till || '')
+        setPayheroChannelId(paySettings.data.payhero_channel_id || '')
         setBankName(paySettings.data.bank_name || '')
         setBankAcct(paySettings.data.bank_acct || '')
         setPreferredMethod(paySettings.data.preferred_method || 'PAYBILL')
@@ -140,6 +143,7 @@ export default function DashboardPage() {
       await api.post('/analytics/settings/payments', {
         paybill: paybill,
         till: till,
+        payhero_channel_id: payheroChannelId,
         bank_name: bankName,
         bank_acct: bankAcct,
         preferred_method: preferredMethod
@@ -249,15 +253,95 @@ export default function DashboardPage() {
   const adjustCart = (id: string, delta: number) =>
     setCart(prev => prev.map(i => i.product.id === id ? { ...i, qty: i.qty + delta } : i).filter(i => i.qty > 0))
 
+  const pollSaleStatus = useCallback((
+    saleId: string, 
+    receiptNum: string, 
+    disc: number, 
+    activePhone: string,
+    itemsSnapshot: any[],
+    subtotalSnapshot: number
+  ) => {
+    let pollCount = 0
+    const maxPolls = 24
+    const interval = setInterval(async () => {
+      pollCount++
+      try {
+        const res = await api.get(`/sales/${saleId}/status`)
+        if (res.data.is_paid) {
+          clearInterval(interval)
+          setPendingSaleId(null)
+          setReceiptData({
+            receipt_number: receiptNum,
+            payment_method: 'M-Pesa (STK Push)',
+            date: new Date().toLocaleString('en-KE'),
+            cashier: 'Cashier',
+            customer: customers.find(c => c.phone === activePhone)?.name || 'Walk-in Customer',
+            items: itemsSnapshot.map(i => ({
+              name: i.product.name,
+              qty: i.qty,
+              price: Number(i.product.selling_price),
+              total: Number(i.product.selling_price) * i.qty
+            })),
+            subtotal: subtotalSnapshot,
+            discount: disc,
+            total: subtotalSnapshot - disc,
+            mpesa_receipt: res.data.mpesa_receipt
+          })
+          setPushState('success')
+          setIsReceiptOpen(true)
+          setCart([])
+          setDiscountVal('0')
+          setPhone('')
+          setSelectedCustPhone('')
+          loadDashboard()
+          return
+        }
+        if (res.data.payment_status === 'FAILED') {
+          clearInterval(interval)
+          setPendingSaleId(null)
+          setPushState('failed')
+          return
+        }
+      } catch {
+        // ignore transient network glitch
+      }
+
+      if (pollCount >= maxPolls) {
+        clearInterval(interval)
+      }
+    }, 2500)
+  }, [customers, loadDashboard])
+
   const handleCheckout = async () => {
     if (!cart.length) return
     const activePhone = payment === 'M-Pesa' ? phone : selectedCustPhone
-    if (payment === 'M-Pesa' && !/^((\+254|0)[17]\d{8})$/.test(activePhone.replace(/\s/g, ''))) {
+    if (payment === 'M-Pesa' && preferredMethod !== 'BANK' && !/^((\+254|0)[17]\d{8})$/.test(activePhone.replace(/\s/g, ''))) {
       setPushState('failed'); return
     }
     setPushState('pending')
+    const disc = parseFloat(discountVal) || 0
+
+    if (payment === 'M-Pesa' && preferredMethod !== 'BANK') {
+      try {
+        const res = await api.post('/sales/initiate-stk', {
+          phone_number: activePhone.replace(/\s/g, ''),
+          customer_name: customers.find(c => c.phone === activePhone)?.name || 'Walk-in Customer',
+          discount: disc.toFixed(2),
+          items: cart.map(i => ({ product_id: i.product.id, quantity: i.qty, unit_price: Number(i.product.selling_price) }))
+        })
+        setCheckoutReceipt(res.data.receipt_number)
+        setPendingSaleId(res.data.sale_id)
+
+        // Poll for automated status updates via webhook
+        pollSaleStatus(res.data.sale_id, res.data.receipt_number, disc, activePhone, [...cart], cartTotal)
+      } catch (err: any) {
+        setPushState('failed')
+        alert(err?.response?.data?.detail || 'Failed to initiate M-Pesa STK push.')
+      }
+      return
+    }
+
     try {
-      const disc = parseFloat(discountVal) || 0
       const res = await api.post('/sales/checkout', {
         items: cart.map(i => ({ product_id: i.product.id, quantity: i.qty, unit_price: Number(i.product.selling_price) })),
         discount: disc.toFixed(2),
@@ -291,6 +375,45 @@ export default function DashboardPage() {
       setSelectedCustPhone('')
       loadDashboard()
     } catch {
+      setPushState('failed')
+    }
+  }
+
+  const handleManualConfirm = async () => {
+    if (!pendingSaleId) return
+    const activePhone = payment === 'M-Pesa' ? phone : selectedCustPhone
+    const disc = parseFloat(discountVal) || 0
+    try {
+      setPushState('pending')
+      const res = await api.post(`/sales/${pendingSaleId}/confirm-manual`)
+      setCheckoutReceipt(res.data.receipt_number)
+      setReceiptData({
+        receipt_number: res.data.receipt_number,
+        payment_method: 'M-Pesa (Manual Confirmation)',
+        date: new Date().toLocaleString('en-KE'),
+        cashier: res.data.cashier_name || 'Cashier',
+        customer: customers.find(c => c.phone === activePhone)?.name || 'Walk-in Customer',
+        items: cart.map(i => ({
+          name: i.product.name,
+          qty: i.qty,
+          price: Number(i.product.selling_price),
+          total: Number(i.product.selling_price) * i.qty
+        })),
+        subtotal: cartTotal,
+        discount: disc,
+        total: cartTotal - disc,
+        mpesa_receipt: 'CONFIRMED-MANUAL'
+      })
+      setPendingSaleId(null)
+      setPushState('success')
+      setIsReceiptOpen(true)
+      setCart([])
+      setDiscountVal('0')
+      setPhone('')
+      setSelectedCustPhone('')
+      loadDashboard()
+    } catch {
+      alert('Failed to manually confirm sale. Please check your network connection.')
       setPushState('failed')
     }
   }
@@ -365,6 +488,9 @@ export default function DashboardPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Cashier:</span><span>{receiptData.cashier}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Customer:</span><span>{receiptData.customer}</span></div>
               <div style={{ display: 'flex', justifyContent: 'space-between' }}><span>Payment:</span><span>{receiptData.payment_method}</span></div>
+              {receiptData.mpesa_receipt && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#0f766e' }}><span>M-Pesa Ref:</span><b>{receiptData.mpesa_receipt}</b></div>
+              )}
             </div>
 
             <div style={{ borderBottom: '1px dashed var(--border)', borderTop: '1px dashed var(--border)', padding: '12px 0', fontSize: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -1452,6 +1578,48 @@ export default function DashboardPage() {
                         </div>
                       </>
                     )}
+
+                    {preferredMethod !== 'BANK' && (
+                      payheroChannelId ? (
+                        <div style={{ fontSize: '11px', color: '#166534', background: '#dcfce7', padding: '3px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>⚡ Pay Hero STK Connected</span>
+                          <span style={{ opacity: 0.7 }}>Channel #{payheroChannelId}</span>
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: '11px', color: '#9a3412', background: '#ffedd5', padding: '3px 8px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <span>⚠️ STK Simulation Mode</span>
+                          <span style={{ opacity: 0.8 }}>(Set Channel ID in Settings)</span>
+                        </div>
+                      )
+                    )}
+                  </div>
+                )}
+
+                {pushState === 'pending' && pendingSaleId && (
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px', marginTop: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#15803d', fontSize: '12px', fontWeight: 600 }}>
+                      <RefreshCw size={14} className="spin" />
+                      <span>STK Push Sent · Waiting for PIN...</span>
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#166534', lineHeight: 1.4 }}>
+                      Prompt sent to {payment === 'M-Pesa' ? phone : selectedCustPhone}. Waiting for customer to enter PIN.
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleManualConfirm}
+                      style={{
+                        padding: '6px 12px',
+                        background: '#15803d',
+                        color: '#fff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '11px',
+                        fontWeight: 600,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Confirm Manually (Customer Already Paid)
+                    </button>
                   </div>
                 )}
 
@@ -1464,7 +1632,7 @@ export default function DashboardPage() {
                 ) : pushState === 'failed' ? (
                   <div className="push-result failed">
                     <span><AlertTriangle size={17} /></span>
-                    <div><b>Checkout failed</b><small>{payment === 'M-Pesa' && preferredMethod !== 'BANK' ? 'Check phone number format.' : 'Please check stock availability.'}</small></div>
+                    <div><b>Checkout failed</b><small>{payment === 'M-Pesa' && preferredMethod !== 'BANK' ? 'Check phone number format or STK prompt.' : 'Please check stock availability.'}</small></div>
                     <button onClick={() => setPushState('idle')}><X size={15} /></button>
                   </div>
                 ) : (
@@ -1714,6 +1882,31 @@ export default function DashboardPage() {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: '8px', padding: '12px' }}>
+                    <div style={{ fontSize: '12px', fontWeight: 600, color: '#166534', marginBottom: '4px' }}>
+                      🚀 Automated M-Pesa STK Push (Pay Hero Kenya)
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#15803d', lineHeight: '1.4' }}>
+                      Link your Pay Hero account so cashier STK prompts deposit payments straight into your till/paybill.
+                    </div>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, marginBottom: '6px' }}>
+                      Pay Hero Channel ID
+                    </label>
+                    <input 
+                      type="text" 
+                      style={{ width: '100%', padding: '10px 12px', border: '1px solid var(--border)', borderRadius: '6px', fontSize: '13px' }} 
+                      value={payheroChannelId} 
+                      onChange={(e) => setPayheroChannelId(e.target.value)} 
+                      placeholder="e.g. 784"
+                    />
+                    <div style={{ fontSize: '11px', color: 'var(--muted-foreground)', marginTop: '4px' }}>
+                      Found in your Pay Hero Dashboard under <em>Payment Channels &gt; My Payment Channels</em>.
+                    </div>
+                  </div>
+
                   {preferredMethod === 'PAYBILL' && (
                     <>
                       <div>
