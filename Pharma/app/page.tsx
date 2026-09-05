@@ -56,7 +56,7 @@ export default function Home() {
       <Features />
       <Workflow />
       <Testimonial />
-      <CTA />
+      <CTA onDemoLogin={handleDemoLogin} demoLoading={demoLoading} />
       <Footer />
     </main>
   )
@@ -238,15 +238,25 @@ function DashboardPreview() {
 
       <div className="relative overflow-hidden rounded-[18px] border-[4px] border-[#e3efeb] bg-white shadow-[0_30px_80px_rgba(20,76,67,0.12)]">
         {/* Dashboard header */}
-        <div className="flex h-14 items-center justify-between border-b border-[#edf2f0] px-5 bg-white">
-          <div className="flex items-center gap-2.5">
-            <LogoMark />
-            <span className="text-[13px] font-semibold text-[#173532]">Pharma</span>
+        <div className="flex h-12 items-center justify-between border-b border-[#edf2f0] px-4 bg-[#fbfdfc]">
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1.5">
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]/80" />
+              <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]/80" />
+            </div>
+            <div className="flex items-center gap-2 pl-2 border-l border-[#e4edea]">
+              <LogoMark />
+              <span className="text-[12px] font-semibold text-[#173532]">Pharma</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-4 text-[10px] text-[#778783]">
-            <span>Today, 24 May 2026</span>
-            <div className="h-7 w-7 rounded-full bg-[#e8f4ef] border border-[#d2ebe3] flex items-center justify-center font-bold text-[#148c77] text-[10px]">JD</div>
+          <div className="flex items-center gap-3 text-[10px] text-[#778783]">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e8f5f0] px-2.5 py-0.5 font-medium text-[#138d78]">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#159d83] animate-pulse" />
+              Live Workspace
+            </span>
+            <div className="h-6 w-6 rounded-full bg-[#e8f4ef] border border-[#d2ebe3] flex items-center justify-center font-bold text-[#148c77] text-[9px]">JD</div>
           </div>
         </div>
 
@@ -625,7 +635,7 @@ function Testimonial() {
 /* CTA                                                                        */
 /* -------------------------------------------------------------------------- */
 
-function CTA() {
+function CTA({ onDemoLogin, demoLoading }: { onDemoLogin: () => void; demoLoading: boolean }) {
   return (
     <section className="px-6 pb-20 bg-white">
       <div className="mx-auto max-w-[1180px] overflow-hidden rounded-2xl border border-[#cfe6df] bg-[#f1faf7]">
@@ -642,13 +652,24 @@ function CTA() {
             </p>
           </div>
 
-          <Link
-            href="/register"
-            className="shrink-0 inline-flex items-center gap-2 rounded-lg bg-[#087e6d] px-7 py-4 text-[13px] font-semibold text-white shadow-lg transition hover:bg-[#066d5f]"
-          >
-            Create your account
-            <ArrowRight size={13} />
-          </Link>
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
+            <button
+              onClick={onDemoLogin}
+              disabled={demoLoading}
+              className="inline-flex items-center gap-2 rounded-lg border border-[#138d78] bg-white px-6 py-3.5 text-[13px] font-semibold text-[#138d78] shadow-sm transition hover:bg-[#138d78]/5"
+            >
+              {demoLoading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={13} className="fill-current" />}
+              See Live Demo
+            </button>
+
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 rounded-lg bg-[#087e6d] px-7 py-4 text-[13px] font-semibold text-white shadow-lg transition hover:bg-[#066d5f]"
+            >
+              Create your account
+              <ArrowRight size={13} />
+            </Link>
+          </div>
         </div>
       </div>
     </section>
