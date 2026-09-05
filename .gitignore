@@ -8,6 +8,8 @@ venv/
 **/.venv/
 **/*.pyc
 node_modules/
+**/node_modules/
 .next/
+**/.next/
 .env*.local
 .DS_Store
