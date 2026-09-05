@@ -1,6 +1,8 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import {
   Boxes, LayoutDashboard, ShoppingCart, Package, AlertTriangle, RefreshCw,
@@ -614,8 +616,16 @@ export default function DashboardPage() {
       {/* Sidebar */}
       <aside className={mobileNav ? 'sidebar open' : 'sidebar'}>
         <div className="brand">
-          <span className="brand-mark"><Activity size={19} /></span>
-          <span>Pharma</span>
+          <Link href="/" className="flex items-center">
+            <Image
+              src="/pharma-logo.png"
+              alt="Pharma"
+              width={120}
+              height={36}
+              className="h-7 w-auto object-contain"
+              priority
+            />
+          </Link>
           <button className="mobile-close" onClick={() => setMobileNav(false)}><X size={19} /></button>
         </div>
         <div className="branch">

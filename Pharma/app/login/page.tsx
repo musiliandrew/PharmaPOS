@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { ArrowRight, Eye, EyeOff, Sparkles } from 'lucide-react'
 import { FormEvent, useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -35,7 +36,7 @@ export default function LoginPage() {
   return (
     <main className="auth-shell">
       <div className="auth-aside">
-        <Link href="/" className="marketing-brand"><span className="brand-mark"><Sparkles size={17} /></span><span>Pharma</span></Link>
+        <Link href="/" className="inline-block mb-6"><Image src="/pharma-logo.png" alt="Pharma" width={140} height={42} className="h-9 w-auto object-contain" priority /></Link>
         <div className="auth-quote">
           <span className="section-kicker">Welcome back</span>
           <h1>Your pharmacy is ready.</h1>
@@ -46,7 +47,7 @@ export default function LoginPage() {
       <div className="auth-panel">
         <div className="auth-form-wrap">
           <div className="auth-mobile-brand">
-            <Link href="/" className="marketing-brand"><span className="brand-mark"><Sparkles size={17} /></span><span>Pharma</span></Link>
+            <Link href="/" className="inline-block mb-6"><Image src="/pharma-logo.png" alt="Pharma" width={140} height={42} className="h-9 w-auto object-contain" priority /></Link>
           </div>
           <span className="section-kicker">Welcome back</span>
           <h2>Log in to Pharma</h2>

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import {
@@ -93,12 +94,15 @@ function Navbar({
   return (
     <header className="sticky top-0 z-50 !block !h-auto !p-0 border-b border-[#e8efed] bg-white/95 backdrop-blur-xl">
       <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
-          <LogoMark />
-          <div className="flex flex-col">
-            <div className="text-[17px] sm:text-[19px] font-semibold tracking-[-0.03em] text-[#173532] leading-tight">Pharma</div>
-            <div className="text-[8px] sm:text-[9px] tracking-wide text-[#78908c] uppercase font-medium">Pharmacy System</div>
-          </div>
+        <Link href="/" className="flex items-center group shrink-0 py-1">
+          <Image
+            src="/pharma-logo.png"
+            alt="Pharma"
+            width={140}
+            height={42}
+            className="h-8 sm:h-9 w-auto object-contain transition-opacity group-hover:opacity-90"
+            priority
+          />
         </Link>
 
         <div role="navigation" className="hidden md:flex items-center gap-7 lg:gap-9 text-[13px] font-medium">
@@ -187,16 +191,16 @@ function Navbar({
 /* LOGO                                                                       */
 /* -------------------------------------------------------------------------- */
 
-function LogoMark() {
+function LogoMark({ className = "h-8 w-8" }: { className?: string }) {
   return (
-    <div className="relative flex h-9 w-9 items-center justify-center">
-      <div className="absolute h-8 w-3 rounded-full bg-gradient-to-b from-[#20d69a] to-[#087c70]" />
-      <div className="absolute h-3 w-8 rounded-full bg-gradient-to-r from-[#087c70] to-[#25d99b]" />
-      <svg className="relative z-10 h-7 w-7" viewBox="0 0 32 32" fill="none">
-        <path d="M9 24C12 18 16 14 23 10" stroke="white" strokeWidth="2.4" strokeLinecap="round" />
-        <path d="M11 22C17 22 22 18 23 11C17 12 12 16 11 22Z" fill="#7BE32A" />
-      </svg>
-    </div>
+    <Image
+      src="/pharma-favicon.png"
+      alt="Pharma"
+      width={36}
+      height={36}
+      className={`${className} object-contain`}
+      priority
+    />
   )
 }
 
@@ -284,7 +288,7 @@ function DashboardPreview() {
               <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]/80" />
             </div>
             <div className="flex items-center gap-2 pl-2 border-l border-[#e4edea]">
-              <LogoMark />
+              <LogoMark className="h-5 w-5" />
               <span className="text-[12px] font-semibold text-[#173532]">Pharma</span>
             </div>
           </div>
@@ -1048,11 +1052,13 @@ function Footer() {
         <div className="grid gap-10 md:grid-cols-[2fr_1fr_1fr_1fr_1fr]">
           <div>
             <div className="flex items-center gap-3">
-              <LogoMark />
-              <div>
-                <div className="text-[16px] font-semibold text-[#173532]">Pharma</div>
-                <div className="text-[8px] text-[#82928e] uppercase font-medium">Pharmacy &amp; Chemist System</div>
-              </div>
+              <Image
+                src="/pharma-logo.png"
+                alt="Pharma"
+                width={130}
+                height={39}
+                className="h-8 w-auto object-contain"
+              />
             </div>
 
             <p className="mt-4 max-w-[230px] text-[11px] leading-5 text-[#879591]">
