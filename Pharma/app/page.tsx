@@ -78,48 +78,48 @@ function Navbar({
   demoLoading: boolean
 }) {
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e8efed] bg-white/90 backdrop-blur-xl">
-      <div className="mx-auto flex h-[72px] max-w-[1180px] items-center justify-between px-6">
-        <Link href="/" className="flex items-center gap-3 group">
+    <header className="sticky top-0 z-50 !block !h-auto !p-0 border-b border-[#e8efed] bg-white/95 backdrop-blur-xl">
+      <div className="mx-auto flex h-[68px] max-w-[1180px] items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
           <LogoMark />
-          <div>
-            <div className="text-[19px] font-semibold tracking-[-0.04em] text-[#173532]">Pharma</div>
-            <div className="text-[9px] tracking-wide text-[#78908c] uppercase font-medium">Pharmacy &amp; Chemist System</div>
+          <div className="flex flex-col">
+            <div className="text-[17px] sm:text-[19px] font-semibold tracking-[-0.03em] text-[#173532] leading-tight">Pharma</div>
+            <div className="text-[8px] sm:text-[9px] tracking-wide text-[#78908c] uppercase font-medium">Pharmacy System</div>
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-8 text-[13px] text-[#647874] md:flex font-medium">
+        <nav className="hidden items-center gap-6 lg:gap-8 text-[13px] text-[#647874] md:flex font-medium">
           <a href="#features" className="transition hover:text-[#138d78]">Features</a>
           <a href="#how-it-works" className="transition hover:text-[#138d78]">How it works</a>
           <a href="#pricing" className="transition hover:text-[#138d78]">Pricing</a>
           <a href="#integrations" className="transition hover:text-[#138d78]">Integrations</a>
-          <button className="flex items-center gap-1 hover:text-[#138d78] transition">
-            Resources <ChevronDown size={13} />
-          </button>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <button
             onClick={onDemoLogin}
             disabled={demoLoading}
-            className="hidden items-center gap-1.5 rounded-lg border border-[#138d78] bg-[#138d78]/5 px-4 py-2.5 text-[12px] font-semibold text-[#138d78] transition hover:bg-[#138d78]/10 sm:inline-flex"
+            className="hidden items-center gap-1.5 rounded-lg border border-[#138d78] bg-[#138d78]/5 px-3.5 py-2 text-[12px] font-semibold text-[#138d78] transition hover:bg-[#138d78]/10 sm:inline-flex"
           >
             {demoLoading ? <RefreshCw size={13} className="animate-spin" /> : <Play size={13} className="fill-current" />}
             <span>Live Demo</span>
           </button>
 
-          <Link href="/login" className="hidden text-[13px] font-medium text-[#516864] transition hover:text-[#138d78] sm:block">
+          <Link href="/login" className="hidden text-[13px] font-medium text-[#516864] transition hover:text-[#138d78] md:block px-1">
             Log in
           </Link>
 
-          <Link href="/register" className="rounded-lg bg-[#087e6d] px-5 py-3 text-[12px] font-semibold text-white shadow-sm transition hover:bg-[#066d5f] inline-flex items-center gap-1.5">
-            Start free trial <ArrowRight size={13} />
+          <Link href="/register" className="rounded-lg bg-[#087e6d] px-3.5 sm:px-4 py-2 sm:py-2.5 text-[11px] sm:text-[12px] font-semibold text-white shadow-sm transition hover:bg-[#066d5f] inline-flex items-center gap-1.5 shrink-0">
+            <span>Start free trial</span>
+            <ArrowRight size={13} className="hidden sm:inline" />
           </Link>
 
           <button
-            className="text-[#173532] md:hidden p-1.5"
+            type="button"
+            className="text-[#173532] md:hidden p-2 rounded-lg hover:bg-[#edf5f2] transition"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle navigation menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X size={22} /> : <Menu size={22} />}
           </button>
@@ -127,18 +127,43 @@ function Navbar({
       </div>
 
       {menuOpen && (
-        <div className="border-b border-[#e8efed] bg-white px-6 py-4 md:hidden flex flex-col gap-3 text-[14px]">
-          <a href="#features" onClick={() => setMenuOpen(false)} className="text-[#647874] py-1">Features</a>
-          <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="text-[#647874] py-1">How it works</a>
-          <a href="#pricing" onClick={() => setMenuOpen(false)} className="text-[#647874] py-1">Pricing</a>
-          <button
-            onClick={() => { setMenuOpen(false); onDemoLogin(); }}
-            disabled={demoLoading}
-            className="flex items-center justify-center gap-2 rounded-lg border border-[#138d78] py-2.5 text-[13px] font-semibold text-[#138d78]"
-          >
-            {demoLoading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} className="fill-current" />}
-            <span>See Live Demo</span>
-          </button>
+        <div className="border-t border-[#e8efed] bg-white px-5 py-4 md:hidden shadow-xl transition-all">
+          <nav className="flex flex-col space-y-1 pb-3">
+            <a href="#features" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Features</a>
+            <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">How it works</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Pricing</a>
+            <a href="#integrations" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Integrations</a>
+          </nav>
+
+          <div className="border-t border-[#edf3f1] pt-3.5 space-y-2.5">
+            <button
+              onClick={() => { setMenuOpen(false); onDemoLogin(); }}
+              disabled={demoLoading}
+              className="w-full flex items-center justify-center gap-2 rounded-lg border border-[#138d78] bg-[#138d78]/5 py-2.5 text-[13px] font-semibold text-[#138d78] transition hover:bg-[#138d78]/10"
+            >
+              {demoLoading ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} className="fill-current" />}
+              <span>Explore Live Demo</span>
+            </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center rounded-lg border border-[#d2dfdb] py-2 text-[13px] font-medium text-[#3b524e] hover:bg-[#f6faf8] transition text-center"
+              >
+                Log in
+              </Link>
+
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-center gap-1.5 rounded-lg bg-[#087e6d] py-2 text-[13px] font-semibold text-white hover:bg-[#066d5f] transition text-center shadow-sm"
+              >
+                <span>Register</span>
+                <ArrowRight size={13} />
+              </Link>
+            </div>
+          </div>
         </div>
       )}
     </header>
@@ -169,19 +194,19 @@ function LogoMark() {
 function Hero({ onDemoLogin, demoLoading }: { onDemoLogin: () => void; demoLoading: boolean }) {
   return (
     <section className="overflow-hidden bg-white">
-      <div className="mx-auto grid max-w-[1180px] items-center gap-14 px-6 pb-20 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:pt-24">
+      <div className="mx-auto grid max-w-[1180px] items-center gap-10 lg:gap-14 px-4 sm:px-6 pb-16 sm:pb-20 pt-10 sm:pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:pt-24">
         {/* LEFT */}
         <div>
-          <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-[#d8eee8] bg-[#eef9f5] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#138b76]">
+          <div className="mb-6 sm:mb-7 inline-flex items-center gap-2 rounded-full border border-[#d8eee8] bg-[#eef9f5] px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#138b76]">
             <span className="h-1.5 w-1.5 rounded-full bg-[#1aae89]" />
             Built for modern Kenyan pharmacies 🇰🇪
           </div>
 
-          <h1 className="max-w-[550px] text-[50px] font-medium leading-[0.98] tracking-[-0.055em] text-[#173532] md:text-[62px]">
+          <h1 className="max-w-[550px] text-[40px] sm:text-[50px] md:text-[62px] font-medium leading-[1] sm:leading-[0.98] tracking-[-0.05em] text-[#173532]">
             Run your pharmacy<br />with <span className="font-serif italic text-[#118c78]">clarity.</span>
           </h1>
 
-          <p className="mt-7 max-w-[500px] text-[16px] leading-7 text-[#748682]">
+          <p className="mt-5 sm:mt-7 max-w-[500px] text-[15px] sm:text-[16px] leading-7 text-[#748682]">
             Pharma brings sales, stock, expiry tracking and your whole team into one calm, connected workspace — powered by FEFO and M-Pesa.
           </p>
 
@@ -260,9 +285,9 @@ function DashboardPreview() {
           </div>
         </div>
 
-        <div className="grid min-h-[420px] grid-cols-[110px_1fr]">
+        <div className="grid min-h-[420px] grid-cols-1 sm:grid-cols-[110px_1fr]">
           {/* Sidebar */}
-          <aside className="border-r border-[#edf2f0] bg-[#fbfdfc] p-2.5 space-y-1">
+          <aside className="hidden sm:block border-r border-[#edf2f0] bg-[#fbfdfc] p-2.5 space-y-1">
             <SidebarItem icon={LayoutDashboard} text="Dashboard" active />
             <SidebarItem icon={Receipt} text="Sales" />
             <SidebarItem icon={Pill} text="Products" />
@@ -276,7 +301,7 @@ function DashboardPreview() {
           </aside>
 
           {/* Content */}
-          <div className="bg-white p-4">
+          <div className="bg-white p-3.5 sm:p-4">
             <div className="mb-3.5 flex items-center justify-between">
               <h3 className="text-[15px] font-semibold text-[#173532]">Dashboard</h3>
               <span className="rounded-md border border-[#e5ece9] px-2.5 py-1 text-[9px] font-medium text-[#6f817d]">
@@ -284,19 +309,19 @@ function DashboardPreview() {
               </span>
             </div>
 
-            <div className="grid grid-cols-4 gap-2">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <Metric title="Today's Sales" value="KES 84,250" change="12.5%" />
               <Metric title="Transactions" value="156" change="8.2%" />
               <Metric title="Gross Profit" value="KES 28,410" change="10.1%" />
               <Metric title="Low Stock" value="23" change="View items" isWarning />
             </div>
 
-            <div className="mt-3 grid grid-cols-[1.55fr_0.95fr] gap-2.5">
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-[1.55fr_0.95fr] gap-2.5">
               <SalesChart />
               <Categories />
             </div>
 
-            <div className="mt-2.5 grid grid-cols-3 gap-2">
+            <div className="mt-2.5 grid grid-cols-1 sm:grid-cols-3 gap-2">
               <SmallMetric icon={AlertTriangle} title="Expiring Soon" value="14 items" isWarning />
               <SmallMetric icon={ShoppingCart} title="Low Stock" value="9 items" />
               <SmallMetric icon={Smartphone} title="M-Pesa Receipts" value="KES 24,350" />
