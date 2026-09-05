@@ -88,12 +88,12 @@ function Navbar({
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-6 lg:gap-8 text-[13px] text-[#647874] md:flex font-medium">
-          <a href="#features" className="transition hover:text-[#138d78]">Features</a>
-          <a href="#how-it-works" className="transition hover:text-[#138d78]">How it works</a>
-          <a href="#pricing" className="transition hover:text-[#138d78]">Pricing</a>
-          <a href="#integrations" className="transition hover:text-[#138d78]">Integrations</a>
-        </nav>
+        <div role="navigation" className="hidden md:flex items-center gap-7 lg:gap-9 text-[13px] font-medium">
+          <a href="#features" className="text-[#5b736f] hover:text-[#118c78] transition-colors py-1">Features</a>
+          <a href="#how-it-works" className="text-[#5b736f] hover:text-[#118c78] transition-colors py-1">How it works</a>
+          <a href="#pricing" className="text-[#5b736f] hover:text-[#118c78] transition-colors py-1">Pricing</a>
+          <a href="#integrations" className="text-[#5b736f] hover:text-[#118c78] transition-colors py-1">Integrations</a>
+        </div>
 
         <div className="flex items-center gap-2 sm:gap-3 lg:gap-4">
           <button
@@ -128,12 +128,12 @@ function Navbar({
 
       {menuOpen && (
         <div className="border-t border-[#e8efed] bg-white px-5 py-4 md:hidden shadow-xl transition-all">
-          <nav className="flex flex-col space-y-1 pb-3">
-            <a href="#features" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Features</a>
-            <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">How it works</a>
-            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Pricing</a>
-            <a href="#integrations" onClick={() => setMenuOpen(false)} className="rounded-lg px-3 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#138d78] transition">Integrations</a>
-          </nav>
+          <div className="flex flex-col space-y-1 pb-3">
+            <a href="#features" onClick={() => setMenuOpen(false)} className="rounded-lg px-3.5 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#118c78] transition-colors">Features</a>
+            <a href="#how-it-works" onClick={() => setMenuOpen(false)} className="rounded-lg px-3.5 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#118c78] transition-colors">How it works</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)} className="rounded-lg px-3.5 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#118c78] transition-colors">Pricing</a>
+            <a href="#integrations" onClick={() => setMenuOpen(false)} className="rounded-lg px-3.5 py-2 text-[14px] font-medium text-[#465c58] hover:bg-[#eef8f5] hover:text-[#118c78] transition-colors">Integrations</a>
+          </div>
 
           <div className="border-t border-[#edf3f1] pt-3.5 space-y-2.5">
             <button
