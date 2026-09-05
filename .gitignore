@@ -4,6 +4,9 @@ __pycache__/
 *.so
 venv/
 .venv/
+**/venv/
+**/.venv/
+**/*.pyc
 node_modules/
 .next/
 .env*.local
