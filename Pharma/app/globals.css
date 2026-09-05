@@ -6,6 +6,7 @@
 @theme inline { --color-background: var(--background); --color-foreground: var(--foreground); --color-card: var(--card); --color-card-foreground: var(--card-foreground); --color-primary: var(--primary); --color-primary-foreground: var(--primary-foreground); --color-muted-foreground: var(--muted-foreground); --color-border: var(--border); --font-sans: 'Inter', system-ui, -apple-system, sans-serif; --font-serif: 'Instrument Serif', Georgia, serif; }
 :root { color-scheme: light; --background:#f7f9f8; --foreground:#172321; --card:#fff; --card-foreground:#172321; --primary:#177d6d; --primary-foreground:#fff; --muted-foreground:#75817f; --border:#e4ebe8; --sidebar:#fff; --navy:#293b5b; --amber:#b88421; --danger:#c95c59; }
 * { box-sizing:border-box; border-color:var(--border); }
+html { scroll-behavior: smooth; }
 body { margin:0; background:var(--background); color:var(--foreground); font-family:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size:14px; line-height:1.5; }
 .font-serif { font-family: 'Instrument Serif', Georgia, serif !important; }
 button,input { font:inherit; } button { cursor:pointer; } a { color:inherit; text-decoration:none; }

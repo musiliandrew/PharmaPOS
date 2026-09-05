@@ -29,6 +29,17 @@ import {
   Menu,
   X,
   RefreshCw,
+  Printer,
+  QrCode,
+  FileText,
+  CheckCircle2,
+  Zap,
+  Shield,
+  Building2,
+  Store,
+  Sparkles,
+  MessageSquare,
+  Database,
 } from 'lucide-react'
 import { loginAsDemoUser } from '@/lib/demoAuth'
 
@@ -55,6 +66,8 @@ export default function Home() {
       <TrustBar />
       <Features />
       <Workflow />
+      <Integrations />
+      <Pricing onDemoLogin={handleDemoLogin} demoLoading={demoLoading} />
       <Testimonial />
       <CTA onDemoLogin={handleDemoLogin} demoLoading={demoLoading} />
       <Footer />
@@ -463,65 +476,78 @@ const features = [
   {
     number: '01',
     icon: Smartphone,
-    title: 'M-Pesa-ready checkout',
-    description: 'Accept cash, card, and M-Pesa from one fast checkout screen. Automated STK Push directly to any Kenyan phone.',
+    title: 'M-Pesa STK Push Checkout',
+    description: 'Accept cash, card, and M-Pesa in one fast screen. Instant automated STK push directly to customer phones with auto-reconciliation to your Till or Paybill.',
   },
   {
     number: '02',
     icon: Package,
-    title: 'FEFO batch & expiry tracking',
-    description: 'Automatically deduct from the earliest-expiry batch first. Eliminate expired medicine losses and dead stock.',
+    title: 'FEFO Batch & Expiry Radar',
+    description: 'Strict First-Expired First-Out dispensing prevents dead stock. Proactive 90/60/30-day early warning radar flags near-expiry medicines before losses occur.',
   },
   {
     number: '03',
     icon: BrainCircuit,
-    title: 'AI business intelligence',
-    description: 'Ask in plain English — get instant answers, stock predictions, margin insights and smart restock recommendations.',
+    title: 'AI Pharmacist Copilot',
+    description: 'Ask clinical and sales questions in plain English. Get instant margin comparisons, restock recommendations, and sales forecasts based on customer traffic.',
   },
   {
     number: '04',
+    icon: QrCode,
+    title: 'Barcode Scanning & Quick Search',
+    description: 'Plug-and-play barcode scanner support. Smart fuzzy search by generic active molecule, brand name, dosage formulation, and strength.',
+  },
+  {
+    number: '05',
+    icon: ShieldCheck,
+    title: 'PPB & Dangerous Drugs Register',
+    description: 'Digital Poison & Prescription book conforming to Kenya Pharmacy and Poisons Board standards with full audit logs for controlled POM medicines.',
+  },
+  {
+    number: '06',
     icon: BarChart3,
-    title: 'Powerful live reports',
-    description: 'Sales, profits, purchases, supplier debts, and stock velocity. Export immediately to clean Excel or PDF formats.',
+    title: 'Live Margin & Profit Ledgers',
+    description: 'Real-time gross profit calculation per item, cashier shift cash-drop reconciliations, supplier debt tracking, and 1-click Excel/PDF exports.',
   },
 ]
 
 function Features() {
   return (
-    <section id="features" className="py-24 bg-white">
+    <section id="features" className="scroll-mt-20 py-24 bg-white">
       <div className="mx-auto max-w-[1180px] px-6">
-        <div className="mb-12 max-w-[620px]">
+        <div className="mb-14 max-w-[620px]">
           <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#14927d]">
-            Everything in sync
+            Core Pharmacy Modules
           </div>
           <h2 className="text-[38px] font-medium leading-[1.05] tracking-[-0.045em] text-[#173532]">
-            The essentials, without the noise.
+            Engineered specifically for Kenyan chemists.
           </h2>
           <p className="mt-4 text-[15px] leading-6 text-[#798985]">
-            Spend less time wrestling with software and more time caring for your customers.
+            From fast OTC checkout queues to automated expiry prevention and regulatory books, Pharma handles the complete lifecycle of your pharmacy.
           </p>
         </div>
 
-        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => {
             const Icon = feature.icon
             return (
               <div
                 key={feature.number}
-                className="group min-h-[245px] rounded-xl border border-[#e1eae7] bg-white p-6 transition duration-300 hover:-translate-y-1 hover:border-[#b9ddd3] hover:shadow-[0_18px_40px_rgba(20,80,70,0.07)] flex flex-col justify-between"
+                className="group min-h-[245px] rounded-xl border border-[#e1eae7] bg-[#fbfdfc] p-6 transition duration-300 hover:-translate-y-1 hover:border-[#b9ddd3] hover:bg-white hover:shadow-[0_18px_40px_rgba(20,80,70,0.07)] flex flex-col justify-between"
               >
                 <div>
                   <div className="flex items-center justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#eaf7f2] text-[#13927b]">
-                      <Icon size={20} />
+                    <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[#eaf7f2] text-[#13927b] group-hover:scale-105 transition-transform">
+                      <Icon size={22} />
                     </div>
-                    <span className="text-[10px] font-bold text-[#15927d] font-mono">{feature.number}</span>
+                    <span className="text-[11px] font-bold text-[#15927d] font-mono">{feature.number}</span>
                   </div>
-                  <h3 className="mt-7 text-[16px] font-semibold tracking-[-0.02em] text-[#173532]">{feature.title}</h3>
-                  <p className="mt-2.5 text-[12px] leading-5 text-[#7b8985]">{feature.description}</p>
+                  <h3 className="mt-6 text-[17px] font-semibold tracking-[-0.02em] text-[#173532]">{feature.title}</h3>
+                  <p className="mt-2.5 text-[13px] leading-5 text-[#738580]">{feature.description}</p>
                 </div>
-                <div className="mt-6 text-[#13927b] transition group-hover:translate-x-1">
-                  <ArrowRight size={16} />
+                <div className="mt-6 text-[#13927b] transition group-hover:translate-x-1 flex items-center gap-1 text-[12px] font-medium">
+                  <span>Learn more</span>
+                  <ArrowRight size={14} />
                 </div>
               </div>
             )
@@ -540,28 +566,28 @@ function Workflow() {
   const steps = [
     {
       number: '01',
-      title: 'Set up your branch',
-      description: 'Add products, configure your Till or Paybill, invite staff members with secure role permissions.',
+      title: 'Set up your branch & catalog',
+      description: 'Add products, upload batch numbers with expiry dates, configure your Till or Paybill, and invite staff with permissions.',
     },
     {
       number: '02',
-      title: 'Sell with confidence',
-      description: 'Cashiers ring up sales with instant M-Pesa STK prompts and automatic FEFO batch deductions.',
+      title: 'Sell with confidence & instant STK push',
+      description: 'Cashiers scan barcodes and trigger instant M-Pesa STK prompts. System confirms receipt and prints thermal slips automatically.',
     },
     {
       number: '03',
-      title: 'Grow with insight',
-      description: 'Ask your built-in AI copilot anything about sales, critical expiry warnings, and fast-moving medicines.',
+      title: 'Deduct stock automatically with FEFO',
+      description: 'First-Expired First-Out dispensing automatically sells the nearest expiring batch, preventing dead stock and expired medicine waste.',
     },
     {
       number: '04',
-      title: 'Scale across locations',
-      description: 'Seamlessly add new chemist branches, centralize procurement, and monitor consolidated performance.',
+      title: 'Scale multi-location operations',
+      description: 'Centralize wholesale supplier orders, transfer inventory between branches, and monitor consolidated profit margins in real time.',
     },
   ]
 
   return (
-    <section id="how-it-works" className="overflow-hidden bg-[#edf8f4] py-24">
+    <section id="how-it-works" className="scroll-mt-20 overflow-hidden bg-[#edf8f4] py-24">
       <div className="mx-auto grid max-w-[1180px] gap-16 px-6 lg:grid-cols-2 items-center">
         <div>
           <div className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#15927d]">
@@ -628,6 +654,316 @@ function Benefit({ icon: Icon, title, text }: { icon: any; title: string; text: 
       <div className="text-[12px] font-semibold text-[#173532]">{title}</div>
       <p className="mt-1.5 text-[11px] leading-4 text-[#7b8c87]">{text}</p>
     </div>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* INTEGRATIONS                                                               */
+/* -------------------------------------------------------------------------- */
+
+const integrations = [
+  {
+    icon: Smartphone,
+    name: 'Pay Hero & Safaricom M-Pesa',
+    category: 'Payment Gateway',
+    tag: 'Native STK Push',
+    description: 'Instant STK PIN push to customer phones. Automatic payment callback verification directly into your Till or Paybill number with zero manual reconciliation.',
+  },
+  {
+    icon: Printer,
+    name: 'ESC/POS Thermal Receipt Printers',
+    category: 'Hardware',
+    tag: 'Plug & Play',
+    description: 'Universal compatibility with standard 58mm and 80mm USB, LAN, and Bluetooth thermal printers (Epson, Xprinter, Rongta, Star) for fast receipt printing.',
+  },
+  {
+    icon: QrCode,
+    name: '1D / 2D Barcode Scanners',
+    category: 'Hardware',
+    tag: 'Universal HID',
+    description: 'Instant barcode recognition with any standard handheld USB or wireless barcode scanner. Eliminate dispensing errors and speed up OTC queues.',
+  },
+  {
+    icon: ShieldCheck,
+    name: 'Kenya PPB Regulatory Compliance',
+    category: 'Regulatory',
+    tag: 'Official Standard',
+    description: 'Built to conform with Kenya Pharmacy and Poisons Board standards. Maintain digital Dangerous Drugs Registers (DDA) and prescription POM records.',
+  },
+  {
+    icon: MessageSquare,
+    name: 'SMS Gateways (Africa\'s Talking / Advanta)',
+    category: 'Customer Comms',
+    tag: 'Automated SMS',
+    description: 'Deliver automated digital SMS receipts upon checkout and schedule automated chronic medication refill reminders for patient retention.',
+  },
+  {
+    icon: Database,
+    name: 'Excel, QuickBooks & PDF Exports',
+    category: 'Accounting',
+    tag: '1-Click Export',
+    description: 'Export sales ledgers, stock valuation, and supplier accounts payable directly into structured Microsoft Excel spreadsheets, CSVs, or audit-ready PDFs.',
+  },
+]
+
+function Integrations() {
+  return (
+    <section id="integrations" className="scroll-mt-20 py-24 bg-white border-t border-[#edf2f0]">
+      <div className="mx-auto max-w-[1180px] px-6">
+        <div className="mb-14 max-w-[620px]">
+          <div className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#14927d]">
+            Ecosystem &amp; Hardware
+          </div>
+          <h2 className="text-[38px] font-medium leading-[1.05] tracking-[-0.045em] text-[#173532]">
+            Connected with the tools your chemist relies on daily.
+          </h2>
+          <p className="mt-4 text-[15px] leading-6 text-[#798985]">
+            No proprietary hardware lock-in. Pharma connects natively to standard Kenyan payment infrastructure, POS printers, scanners, and regulatory registers.
+          </p>
+        </div>
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {integrations.map((item) => {
+            const Icon = item.icon
+            return (
+              <div
+                key={item.name}
+                className="group rounded-2xl border border-[#e2eae7] bg-[#fbfdfc] p-6 transition duration-200 hover:-translate-y-1 hover:border-[#b8ded4] hover:bg-white hover:shadow-[0_20px_40px_rgba(20,80,70,0.06)] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#eaf7f2] text-[#13927b] group-hover:scale-105 transition-transform">
+                      <Icon size={22} />
+                    </div>
+                    <span className="rounded-full bg-[#edf7f3] border border-[#d2ebe2] px-2.5 py-1 text-[10px] font-bold text-[#148c77]">
+                      {item.tag}
+                    </span>
+                  </div>
+
+                  <div className="mt-5 text-[11px] font-medium text-[#7d908c] uppercase tracking-wider">
+                    {item.category}
+                  </div>
+                  <h3 className="mt-1.5 text-[16px] font-semibold tracking-[-0.02em] text-[#173532]">
+                    {item.name}
+                  </h3>
+                  <p className="mt-2.5 text-[12px] leading-5 text-[#738580]">
+                    {item.description}
+                  </p>
+                </div>
+
+                <div className="mt-5 pt-4 border-t border-[#eff4f2] flex items-center justify-between text-[11px] font-medium text-[#13927b]">
+                  <span>Active integration</span>
+                  <CheckCircle2 size={15} />
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* PRICING                                                                    */
+/* -------------------------------------------------------------------------- */
+
+function Pricing({ onDemoLogin, demoLoading }: { onDemoLogin: () => void; demoLoading: boolean }) {
+  const [annual, setAnnual] = useState(false)
+
+  const plans = [
+    {
+      name: 'Solo Chemist',
+      tagline: 'Ideal for independent retail chemists and single-dispensary clinics.',
+      monthlyPrice: 2500,
+      annualPrice: 2000,
+      popular: false,
+      features: [
+        '1 Chemist branch / outlet',
+        'Up to 2 cashier user seats',
+        'Sub-second barcode POS checkout',
+        'M-Pesa STK Push (Pay Hero Till / Paybill)',
+        'Automatic FEFO batch expiry deductions',
+        'Daily sales & cash-drop shift reports',
+        'Email & WhatsApp onboarding support',
+      ],
+      ctaText: 'Start 14-day free trial',
+      ctaHref: '/register',
+    },
+    {
+      name: 'Growing Pharmacy',
+      tagline: 'Built for high-volume retail pharmacies needing predictive intelligence.',
+      monthlyPrice: 5500,
+      annualPrice: 4400,
+      popular: true,
+      badge: 'Recommended',
+      features: [
+        'Up to 2 branches included',
+        'Unlimited cashier & pharmacist accounts',
+        'Automated M-Pesa STK Push & auto-reconciliation',
+        'AI Copilot business intelligence queries',
+        '90/60/30-day early expiry warning radar',
+        'Controlled drugs / DDA prescription register',
+        'Cashier shift reconciliation & audits',
+        'Supplier debts, purchase orders & profit ledgers',
+        'Priority telephone & WhatsApp VIP support',
+      ],
+      ctaText: 'Start free trial',
+      ctaHref: '/register',
+    },
+    {
+      name: 'Pharmacy Chain & Enterprise',
+      tagline: 'For multi-location retail chains and hospital pharmacy operations.',
+      monthlyPrice: 12000,
+      annualPrice: 9600,
+      popular: false,
+      features: [
+        'Up to 5 branches included (+KES 1,800/extra branch)',
+        'Central warehouse & inter-branch stock transfers',
+        'Multi-till M-Pesa channel mapping per branch',
+        'Consolidated multi-branch P&L & velocity metrics',
+        'KRA eTIMS automated tax compliance integration',
+        'Legacy POS catalog & batch data migration',
+        'Dedicated account manager & staff training',
+        '99.9% uptime SLA guarantee',
+      ],
+      ctaText: 'Talk to sales',
+      ctaHref: '/register',
+    },
+  ]
+
+  return (
+    <section id="pricing" className="scroll-mt-20 py-24 bg-[#f8faf9] border-t border-[#edf2f0]">
+      <div className="mx-auto max-w-[1180px] px-6">
+        <div className="text-center max-w-[640px] mx-auto">
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[#d2ebe2] bg-[#eef9f5] px-3.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#14927d]">
+            Transparent Pricing
+          </div>
+          <h2 className="text-[38px] font-medium leading-[1.05] tracking-[-0.045em] text-[#173532] md:text-[46px]">
+            Simple, honest plans for <span className="font-serif italic text-[#118c78]">every chemist.</span>
+          </h2>
+          <p className="mt-4 text-[15px] leading-6 text-[#778883]">
+            No unexpected onboarding fees. Full 14-day free trial on all plans. All plans include automated FEFO inventory and M-Pesa STK push.
+          </p>
+
+          {/* Billing Switch */}
+          <div className="mt-8 inline-flex items-center gap-3 rounded-full border border-[#dce7e3] bg-white p-1.5 shadow-sm">
+            <button
+              onClick={() => setAnnual(false)}
+              className={
+                !annual
+                  ? 'rounded-full bg-[#087e6d] px-5 py-2 text-[12px] font-semibold text-white transition'
+                  : 'rounded-full px-5 py-2 text-[12px] font-medium text-[#657975] hover:text-[#173532] transition'
+              }
+            >
+              Monthly billing
+            </button>
+            <button
+              onClick={() => setAnnual(true)}
+              className={
+                annual
+                  ? 'inline-flex items-center gap-1.5 rounded-full bg-[#087e6d] px-5 py-2 text-[12px] font-semibold text-white transition'
+                  : 'inline-flex items-center gap-1.5 rounded-full px-5 py-2 text-[12px] font-medium text-[#657975] hover:text-[#173532] transition'
+              }
+            >
+              <span>Annual billing</span>
+              <span className="rounded-full bg-[#d8eee8] px-2 py-0.5 text-[10px] font-bold text-[#087e6d]">
+                Save 20%
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Pricing Cards Grid */}
+        <div className="mt-14 grid gap-7 lg:grid-cols-3">
+          {plans.map((plan) => {
+            const price = annual ? plan.annualPrice : plan.monthlyPrice
+            return (
+              <div
+                key={plan.name}
+                className={
+                  plan.popular
+                    ? 'relative rounded-2xl border-2 border-[#138d78] bg-white p-8 shadow-[0_25px_60px_rgba(19,141,120,0.12)] flex flex-col justify-between'
+                    : 'relative rounded-2xl border border-[#dfe8e5] bg-white p-8 shadow-sm flex flex-col justify-between'
+                }
+              >
+                {plan.badge && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 rounded-full bg-[#087e6d] px-4 py-1 text-[11px] font-semibold uppercase tracking-wider text-white shadow-sm">
+                    {plan.badge}
+                  </div>
+                )}
+
+                <div>
+                  <div className="text-[19px] font-semibold tracking-[-0.02em] text-[#173532]">{plan.name}</div>
+                  <p className="mt-2 text-[12px] leading-5 text-[#738580] min-h-[40px]">{plan.tagline}</p>
+
+                  <div className="mt-6 flex items-baseline gap-1.5 border-b border-[#edf3f1] pb-6">
+                    <span className="text-[13px] font-bold text-[#627773]">KES</span>
+                    <span className="text-[38px] font-bold tracking-[-0.03em] text-[#173532]">
+                      {price.toLocaleString()}
+                    </span>
+                    <span className="text-[12px] text-[#7c8f8a]">/ month</span>
+                  </div>
+
+                  <div className="mt-6 space-y-3 text-[12px]">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-[#697d79]">What is included:</div>
+                    {plan.features.map((feat) => (
+                      <div key={feat} className="flex items-start gap-2.5 text-[#475d59]">
+                        <CheckCircle2 size={16} className="text-[#138d78] shrink-0 mt-0.5" />
+                        <span>{feat}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="mt-8 pt-6 border-t border-[#edf3f1] space-y-2.5">
+                  <Link
+                    href={plan.ctaHref}
+                    className={
+                      plan.popular
+                        ? 'w-full inline-flex items-center justify-center gap-2 rounded-xl bg-[#087e6d] py-3.5 text-[13px] font-semibold text-white shadow-md transition hover:bg-[#066d5f]'
+                        : 'w-full inline-flex items-center justify-center gap-2 rounded-xl border border-[#cbd9d5] bg-white py-3.5 text-[13px] font-semibold text-[#173532] transition hover:border-[#138d78] hover:text-[#138d78]'
+                    }
+                  >
+                    <span>{plan.ctaText}</span>
+                    <ArrowRight size={14} />
+                  </Link>
+
+                  <button
+                    onClick={onDemoLogin}
+                    disabled={demoLoading}
+                    className="w-full inline-flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-[#607470] hover:text-[#138d78] transition"
+                  >
+                    {demoLoading ? <RefreshCw size={12} className="animate-spin" /> : <Play size={12} className="fill-current" />}
+                    <span>or test live demo workspace</span>
+                  </button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Assurance Pills */}
+        <div className="mt-14 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[12px] font-medium text-[#728581] border-t border-[#e6eeea] pt-8">
+          <div className="flex items-center gap-2">
+            <Check size={16} className="text-[#138d78]" />
+            <span>14-day full access free trial</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check size={16} className="text-[#138d78]" />
+            <span>No credit card required</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check size={16} className="text-[#138d78]" />
+            <span>M-Pesa payments accepted</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Check size={16} className="text-[#138d78]" />
+            <span>Cancel anytime with 1 click</span>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
 
